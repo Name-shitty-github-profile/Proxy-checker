@@ -1,19 +1,19 @@
-import requests,threading
-
-
-def check(proxies):
+import requests, asyncio
+f = open("Valid.txt", "a")
+i = open("Invalid.txt", "a")
+async def check(proxies):
     try:
-        proxy = {'http': f'http://{proxies}','https':f'http://{proxies}'}
-        r = requests.get("https://discord.gg/catcha", proxies=proxy)
-        if r.status_code == 200:
-            f = open("Valid.txt", "a")
-            f.write(f"{proxies}")      
+        proxi = {'http': f'http://{proxy}','https':f'http://{proxy}'}
+        r = requests.get("https://discord.gg/catcha", proxies=proxi)
+        f.write(proxi)
     except:
-        i = open("Invalid.txt", "a")
-        i.write(f"{proxies}")  
-        pass
+        i.write(f"{proxy}")
 
-
-for proxies in open("proxies.txt","r+"):
-    print("Checking -->",proxies)
-    threading.Thread(target=check,args=(proxies,)).start()
+async def main():
+    tasks: list = []
+    with open("proxies.txt","r") as f:
+        proxies = f.read().split('\n')
+    for proxy in proxies:
+        print(f"Checking --> {proxy}")
+        tasks.append(asyncio.create_task(check(proxy)))
+    for i in tasks: await i
